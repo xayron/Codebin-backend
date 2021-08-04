@@ -16,7 +16,7 @@ public class CodebinBackendApplication {
 
 @RestController
 class HelloController {
-	@GetMapping("/hello/{name}")
+	@GetMapping("/{name}")
 	public String hello(@PathVariable("name") String name) {
 		return "Hello " + name;
 	}
