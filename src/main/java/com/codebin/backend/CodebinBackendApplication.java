@@ -3,6 +3,7 @@ package com.codebin.backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 public class CodebinBackendApplication {
@@ -16,6 +17,6 @@ public class CodebinBackendApplication {
 class HelloController {
 	@GetMapping("/")
 	String hello() {
-		return "Hello World";
+		return "Hello World. Welcome to my app";
 	}
 }
