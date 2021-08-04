@@ -12,6 +12,7 @@ public class CodebinBackendApplication {
 	}
 }
 
+@RestController
 class HelloController {
 	@GetMapping("/")
 	String hello() {
