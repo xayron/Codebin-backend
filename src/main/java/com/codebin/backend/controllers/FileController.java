@@ -1,5 +1,7 @@
 package com.codebin.backend.controllers;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.io.FileUtils;
@@ -37,11 +39,8 @@ public class FileController {
         return fileNames;
     }
 
-    @RequestMapping(
-            value = "/saveNewFile",
-            method = RequestMethod.POST,
-            consumes = "text/plain")
-    public void saveNewFile(String data, String extension) {
+    @RequestMapping(value = "/saveNewFile", method = RequestMethod.POST)
+    public String saveNewFile(String data, String extension) {
         String[] pathNames = getFilesList();
         String fileName = getNewFileName();
         boolean isPresent = Arrays.asList(pathNames).contains(fileName);
@@ -49,7 +48,7 @@ public class FileController {
             try {
                 File file = new File(getPath() + fileName + "." + extension);
                 FileUtils.writeStringToFile(file, data, StandardCharsets.UTF_8);
-                System.out.println(fileName);
+                return fileName;
             } catch (IOException e) {
                 System.out.println(e);
                 e.printStackTrace();
@@ -57,6 +56,7 @@ public class FileController {
         } else {
             saveNewFile(data, extension);
         }
+        return "";
     }
 
     @RequestMapping(
@@ -85,8 +85,11 @@ public class FileController {
     @ResponseBody
     public String greetingJson(HttpServletRequest request) throws IOException {
         final String json = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
-        System.out.println("json = " + json);
-        return json;
+        JsonParser parser = new JsonParser();
+        JsonObject jsonObj = parser.parse(json).getAsJsonObject();
+        return jsonObj.get("extension").getAsString();
+        //System.out.println("json = " + json);
+        //return json;
     }
 
     @GetMapping("/hello/{name}")
