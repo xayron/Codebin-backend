@@ -1,6 +1,5 @@
 package com.codebin.backend.controllers;
 
-import com.sun.javafx.collections.MappingChange;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 
 @RestController
 public class FileController {
@@ -59,7 +59,7 @@ public class FileController {
     @RequestMapping(
             value = "/process",
             method = RequestMethod.POST)
-    public void process(@RequestBody MappingChange.Map<String, Object> payload) throws Exception {
+    public void process(@RequestBody Map<String, Object> payload) throws Exception {
         System.out.println(payload);
     }
 
