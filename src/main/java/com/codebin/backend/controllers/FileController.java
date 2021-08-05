@@ -76,15 +76,15 @@ public class FileController {
     }
 
     @GetMapping("/getFileData/{fileName}")
-    public void getFileData(@PathVariable("fileName") String fileName) {
+    public String getFileData(@PathVariable("fileName") String fileName) {
         try {
             File file = new File(getPath() + fileName);
-            System.out.println(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
+            return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
         } catch (IOException e) {
             System.out.println(e);
             e.printStackTrace();
         }
-        System.out.println();
+        return "";
     }
 
     @RequestMapping(value = "/greeting", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
