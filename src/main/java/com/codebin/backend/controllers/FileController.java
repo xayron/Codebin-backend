@@ -1,9 +1,12 @@
 package com.codebin.backend.controllers;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.io.FileUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -75,6 +78,14 @@ public class FileController {
             e.printStackTrace();
         }
         System.out.println();
+    }
+
+    @RequestMapping(value = "/greeting", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String greetingJson(HttpServletRequest request) throws IOException {
+        final String json = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
+        System.out.println("json = " + json);
+        return "Hello World!";
     }
 
     @GetMapping("/hello/{name}")
