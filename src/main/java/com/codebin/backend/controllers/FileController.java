@@ -66,7 +66,7 @@ public class FileController {
         System.out.println();
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/hello/{name}")
     public String hello(@PathVariable("name") String name) {
         return "Hello " + name;
     }
