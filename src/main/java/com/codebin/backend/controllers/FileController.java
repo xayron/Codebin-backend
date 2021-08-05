@@ -62,10 +62,11 @@ public class FileController {
     @RequestMapping(
             value = "/process",
             method = RequestMethod.POST)
-    public void process(@RequestBody Map<String, Object> payload) throws Exception {
+    public String process(@RequestBody Map<String, Object> payload) throws Exception {
         System.out.println("Hello");
         System.out.println(payload.get("data"));
         System.out.println(payload);
+        return String.valueOf(payload.get("data"));
     }
 
     @GetMapping("/getFileData/{fileName}")
@@ -85,7 +86,7 @@ public class FileController {
     public String greetingJson(HttpServletRequest request) throws IOException {
         final String json = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
         System.out.println("json = " + json);
-        return "Hello World!";
+        return json;
     }
 
     @GetMapping("/hello/{name}")
