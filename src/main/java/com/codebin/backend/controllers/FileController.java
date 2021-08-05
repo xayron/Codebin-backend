@@ -39,7 +39,13 @@ public class FileController {
         return fileNames;
     }
 
-    @RequestMapping(value = "/saveNewFile", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveFile", method = RequestMethod.POST)
+    public String saveFile(@RequestBody Map<String, Object> payload) {
+        String data = String.valueOf(payload.get("data"));
+        String extension = String.valueOf(payload.get("extension"));
+        return  saveNewFile(data, extension);
+    }
+
     public String saveNewFile(String data, String extension) {
         String[] pathNames = getFilesList();
         String fileName = getNewFileName();
