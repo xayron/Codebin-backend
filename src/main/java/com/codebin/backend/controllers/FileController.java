@@ -1,7 +1,6 @@
 package com.codebin.backend.controllers;
 
 import com.codebin.backend.classes.JsonData;
-import com.sun.javafx.collections.MappingChange;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.bind.annotation.*;
@@ -60,8 +59,8 @@ public class FileController {
     @RequestMapping(
             value = "/process",
             method = RequestMethod.POST)
-    public void process(@RequestBody MappingChange.Map<String, Object> payload) throws Exception {
-        System.out.println(payload);
+    public void process(@RequestBody JsonData jsonData) throws Exception {
+        System.out.println(jsonData);
     }
 
     @GetMapping("/getFileData/{fileName}")
