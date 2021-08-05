@@ -65,4 +65,14 @@ public class FileController {
         }
         System.out.println();
     }
+
+    @GetMapping("/{name}")
+    public String hello(@PathVariable("name") String name) {
+        return "Hello " + name;
+    }
+
+    @GetMapping("/")
+    public String start() {
+        return "Hello World";
+    }
 }
