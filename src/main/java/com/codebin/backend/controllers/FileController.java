@@ -2,9 +2,7 @@ package com.codebin.backend.controllers;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.io.FileUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +33,10 @@ public class FileController {
         return fileNames;
     }
 
-    @GetMapping("/saveNewFile")
+    @RequestMapping(
+            value = "/saveNewFile",
+            method = RequestMethod.POST,
+            consumes = "text/plain")
     public void saveNewFile(String data, String extension) {
         String[] pathNames = getFilesList();
         String fileName = getNewFileName();
@@ -52,6 +53,14 @@ public class FileController {
         } else {
             saveNewFile(data, extension);
         }
+    }
+
+    @RequestMapping(
+            value = "/process",
+            method = RequestMethod.POST,
+            consumes = "text/plain")
+    public void process(@RequestBody String payload) throws Exception {
+        System.out.println(payload);
     }
 
     @GetMapping("/getFileData/{fileName}")
