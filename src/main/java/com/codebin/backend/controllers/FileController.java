@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class FileController {
     public String getNewFileName() {
