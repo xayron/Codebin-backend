@@ -1,23 +1,26 @@
 package com.codebin.backend.controllers;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.io.FileUtils;
-import org.springframework.http.MediaType;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @CrossOrigin(origins = "*")
 @RestController
 public class FileController {
+    private String auth = "";
+
     public String getNewFileName() {
         return RandomStringUtils.randomAlphabetic(5, 20);
     }
@@ -28,7 +31,7 @@ public class FileController {
         String absolutePath = dir.getAbsolutePath();
         if (!dir.exists()){
             System.out.println("Doesn't exist");
-            dir.mkdirs();
+            if(!dir.mkdirs()) System.out.println("Cannot create directory");
         }
         return absolutePath+"/";
     }
@@ -47,6 +50,20 @@ public class FileController {
         return  saveNewFile(data, extension);
     }
 
+    @RequestMapping(value = "/editFile", method = RequestMethod.POST)
+    public String editFile(@RequestBody Map<String, Object> payload) {
+        String data = String.valueOf(payload.get("data"));
+        String fileName = String.valueOf(payload.get("fileName"));
+        File file = new File(getPath() + fileName);
+        try {
+            FileUtils.writeStringToFile(file, data, StandardCharsets.UTF_8);
+            return fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public String saveNewFile(String data, String extension) {
         String[] pathNames = getFilesList();
         String fileName = getNewFileName();
@@ -57,7 +74,6 @@ public class FileController {
                 FileUtils.writeStringToFile(file, data, StandardCharsets.UTF_8);
                 return fileName;
             } catch (IOException e) {
-                System.out.println(e);
                 e.printStackTrace();
             }
         } else {
@@ -66,37 +82,15 @@ public class FileController {
         return "";
     }
 
-    @RequestMapping(
-            value = "/process",
-            method = RequestMethod.POST)
-    public String process(@RequestBody Map<String, Object> payload) throws Exception {
-        System.out.println("Hello");
-        System.out.println(payload.get("data"));
-        System.out.println(payload);
-        return String.valueOf(payload.get("data"));
-    }
-
     @GetMapping("/getFileData/{fileName}")
     public String getFileData(@PathVariable("fileName") String fileName) {
         try {
             File file = new File(getPath() + fileName);
             return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.out.println(e);
             e.printStackTrace();
         }
         return "";
-    }
-
-    @RequestMapping(value = "/greeting", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public String greetingJson(HttpServletRequest request) throws IOException {
-        final String json = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
-        JsonParser parser = new JsonParser();
-        JsonObject jsonObj = parser.parse(json).getAsJsonObject();
-        return jsonObj.get("extension").getAsString();
-        //System.out.println("json = " + json);
-        //return json;
     }
 
     @GetMapping("/hello/{name}")
@@ -108,4 +102,41 @@ public class FileController {
     public String start() {
         return "Hello World";
     }
+
+    @GetMapping("/getAuth")
+    public String getAuth() {
+        auth = RandomStringUtils.randomAlphabetic(60);
+        return auth;
+    }
+
+    public String deleteAllFiles() throws IOException {
+        String[] fileNames = getFilesList();
+        Date today = new Date();
+        int count = 0, deleted = 0;
+        for(String fileName : fileNames) {
+            File file = new File(getPath() + fileName);
+            BasicFileAttributeView basicFileAttributeView = Files.getFileAttributeView(Paths.get(file.getAbsolutePath()), BasicFileAttributeView.class);
+            BasicFileAttributes attr = basicFileAttributeView.readAttributes();
+            long creationDate = attr.creationTime().toMillis();
+            long diffInMill = Math.abs(today.getTime() - creationDate);
+            long diff = TimeUnit.DAYS.convert(diffInMill, TimeUnit.MILLISECONDS);
+            if(diff == 0) {
+                count++;
+                if(file.delete()) deleted++;
+            }
+        }
+        return "Count: " + count + " Deleted: " + deleted;
+    }
+
+    @RequestMapping(value = "/deleteFiles", method = RequestMethod.POST)
+    public String deleteFiles(@RequestBody Map<String, Object> payload) throws IOException {
+        String user = String.valueOf(payload.get("user"));
+        String pass = String.valueOf(payload.get("pass"));
+        String authString = String.valueOf(payload.get("auth"));
+        if(user.equals("sudo.dev") && pass.equals("theseFilesCanBeDeletedNow") && authString.equals(auth))
+            return deleteAllFiles();
+        else return "Authentication Error";
+    }
 }
+
+
